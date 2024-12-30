@@ -9,10 +9,11 @@ class Books extends Model
 {
     use HasFactory;
 
+    protected $table = "books";
     protected $primaryKey = 'book_id';
-    protected $fillable = ['title', 'author', 'publisher', 'publication_year', 'isbn', 'book_status', 'status_delete'];
-    public function rentalBooks()
+    protected $fillable = ['title', 'author', 'publisher', 'publication_year', 'isbn', 'book_status', 'stock', 'status_delete'];
+    public function rentalDetails()
     {
-        return $this->belongsToMany(Rental::class, 'rental_book', 'book_id', 'rental_id');
+        return $this->hasMany(RentalDetail::class, 'book_id', 'book_id');
     }
 }

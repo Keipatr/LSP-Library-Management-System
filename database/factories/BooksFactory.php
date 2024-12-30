@@ -22,7 +22,7 @@ class BooksFactory extends Factory
             'publisher' => $this->faker->company,
             'publication_year' => $this->faker->year,
             'isbn' => $this->faker->isbn13,
-            'book_status' => $this->faker->randomElement(['0', '1']), // 0 = unavailable, 1 = available
+            'stock' => $this->faker->numberBetween(0, 10),
             'status_delete' => $this->faker->randomElement(['0', '1']), // 0 = active, 1 = deleted
         ];
     }

@@ -14,11 +14,11 @@ class Rental extends Model
 
     public function user()
     {
-        return $this->belongsTo(Users::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
-    public function rentalBooks()
+    public function rentalDetails()
     {
-        return $this->hasMany(RentalDetail::class, 'rental_id');
+        return $this->hasMany(RentalDetail::class, 'rental_id', 'rental_id');
     }
 }

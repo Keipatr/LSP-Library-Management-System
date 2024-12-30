@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Users;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 /**
@@ -18,7 +18,7 @@ class RentalFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => Users::factory(),
+            'user_id' => User::factory(),
             'borrowed_at' => $this->faker->dateTimeThisYear(),
             'due_date' => Carbon::now()->addDays(7),
             'returned_at' => $this->faker->optional()->dateTimeThisYear(),

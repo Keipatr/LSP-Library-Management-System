@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('publisher');
             $table->year('publication_year');
             $table->string('isbn')->unique();
-            $table->enum('book_status', [0, 1])->default(0); // 0 = unavailable, 1 = available
+            $table->unsignedInteger('stock');
             $table->enum('status_delete', [0, 1])->default(0); // 0: active, 1: deleted
             $table->timestamps();
         });
