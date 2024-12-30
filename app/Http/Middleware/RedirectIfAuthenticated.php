@@ -16,15 +16,15 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, ...$guards)
     {
-        foreach ($guards as $guard) {
-            if (Auth::guard($guard)->check()) {
-                // Redirect berdasarkan role
-                if (Auth::user()->role == 0) {
-                    return redirect()->route('catalog.index'); // Staff/Admin ke dashboard
-                }
-                return redirect('/'); // Member/Guest ke home
-            }
-        }
+        // foreach ($guards as $guard) {
+        //     if (Auth::guard($guard)->check()) {
+        //         // Redirect berdasarkan role
+        //         if (Auth::user()->role == 0) {
+        //             return redirect()->route('catalog.index'); // Staff/Admin ke dashboard
+        //         }
+        //         return redirect('/'); // Member/Guest ke home
+        //     }
+        // }
 
         return $next($request);
     }

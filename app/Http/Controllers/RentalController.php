@@ -15,7 +15,7 @@ class RentalController extends Controller
         // Query dasar untuk rental
         $query = Rental::with(['user', 'rentalDetails.book'])
             ->where('status_delete', '0')
-            ->orderBy('due_date', 'desc');
+            ->orderBy('created_at', 'desc');
 
         // Filter berdasarkan pencarian (anggota atau buku)
         if ($request->has('search') && $request->search) {
@@ -58,13 +58,15 @@ class RentalController extends Controller
             'user_id' => 'required|exists:users,user_id',
             'book_ids' => 'required|array|min:1',
             'book_ids.*' => 'exists:books,book_id',
+            'borrowed_at' => 'required|date',
         ]);
+        $dueDate = date('Y-m-d 23:59:59', strtotime($request->borrowed_at . ' +7 days'));
 
         // Create Rental
         $rental = Rental::create([
             'user_id' => $request->user_id,
             'borrowed_at' => now(),
-            'due_date' => now()->addDays(7),
+            'due_date' => $dueDate,
             'rental_status' => '0', // Dipinjam
         ]);
 
@@ -96,5 +98,39 @@ class RentalController extends Controller
         }
 
         return redirect()->route('rental.index')->with('success', 'Buku berhasil dikembalikan!');
+    }
+    public function destroy($id)
+    {
+        // Ambil data rental beserta detailnya
+        $rental = Rental::with('rentalDetails.book')->findOrFail($id);
+
+        if ($rental->rental_status == 1) {
+            return redirect()->route('rental.index')->with('error', 'Tidak dapat menghapus peminjaman yang telah dikembalikan.');
+        }
+
+        // Update status_delete menjadi 1
+        $rental->update(['status_delete' => '1']);
+
+        // Tambahkan kembali stok buku yang dipinjam
+        foreach ($rental->rentalDetails as $detail) {
+            $book = $detail->book;
+            if ($book) {
+                $book->increment('stock'); // Tambah stok
+            }
+        }
+
+        return redirect()->route('rental.index')->with('success', 'Peminjaman berhasil dihapus.');
+    }
+
+    public function showBorrowedBooks()
+    {
+        $user = auth()->user(); // Ambil pengguna yang sedang login
+        $borrowedBooks = Rental::with('rentalDetails.book')
+            ->where('user_id', $user->user_id)
+            ->where('status_delete', '0')
+            ->where('rental_status', '0') // Hanya yang status pinjam (belum dikembalikan)
+            ->get();
+
+        return response()->json($borrowedBooks);
     }
 }

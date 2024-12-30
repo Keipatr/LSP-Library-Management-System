@@ -10,7 +10,8 @@ class CatalogController extends Controller
     public function index(Request $request)
     {
         // Query dasar untuk mengambil buku
-        $query = Books::where('status_delete', '0') // Ambil buku yang tidak dihapus
+        $query = Books::with(['rentalDetails.rental.user']) // Menyertakan peminjaman dan user terkait
+            ->where('status_delete', '0') // Ambil buku yang tidak dihapus
             ->orderBy('title', 'asc'); // Mengurutkan berdasarkan judul
 
         // Filter berdasarkan pencarian (judul atau penulis)
@@ -37,6 +38,7 @@ class CatalogController extends Controller
 
         return view('catalog.index', compact('books'));
     }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

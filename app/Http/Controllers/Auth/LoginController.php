@@ -44,8 +44,11 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($request->only('email', 'password'))) {
-            if (Auth::user()->role == 0) {
+            if (Auth::user()->role == '0') {
                 return redirect()->route('catalog.index'); // Staff ke dashboard
+            }
+            else {
+                return back()->withErrors(['email' => 'Bukan Staff.'])->withInput();
             }
         }
 

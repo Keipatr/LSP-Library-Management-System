@@ -11,7 +11,11 @@ class Rental extends Model
     protected $table = 'rental';
     protected $primaryKey = 'rental_id';
     protected $fillable = ['user_id', 'borrowed_at', 'due_date', 'returned_at', 'rental_status', 'status_delete'];
-
+    protected $casts = [
+        'borrowed_at' => 'datetime',
+        'due_date' => 'datetime',
+        'returned_at' => 'datetime',
+    ];
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');

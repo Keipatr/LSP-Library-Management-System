@@ -27,7 +27,8 @@
                     <div class="col-md-2 my-1">
                         <div class="form-group">
                             <select class="form-control" name="status">
-                                <option value="semua" {{ request()->status == 'semua' ? 'selected' : '' }}>Semua</option>
+                                <option value="semua" {{ request()->status == 'semua' ? 'selected' : '' }}>Semua Status
+                                </option>
                                 <option value="0" {{ request()->status == '0' ? 'selected' : '' }}>Dipinjam</option>
                                 <option value="1" {{ request()->status == '1' ? 'selected' : '' }}>Dikembalikan
                                 </option>
@@ -86,6 +87,12 @@
                                                 onclick="return confirm('Yakin ingin mengembalikan buku?')">Kembalikan</button>
                                         </form>
                                     @endif
+                                    <form action="{{ route('rental.destroy', $rental->rental_id) }}" method="POST"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus peminjaman ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
@@ -123,6 +130,18 @@
                                 @endforeach
                             </select>
                         </div>
+                        <!-- Input Borrowed At -->
+                        <div class="mb-3">
+                            <label for="borrowed_at" class="form-label">Waktu Peminjaman</label>
+                            <input type="datetime-local" class="form-control" id="borrowed_at" name="borrowed_at" required>
+                        </div>
+
+                        <!-- Tampilkan Due Date -->
+                        <div class="mb-3">
+                            <label for="due_date" class="form-label">Tanggal Harus Kembali</label>
+                            <input type="text" class="form-control" id="due_date" name="due_date_display" readonly>
+                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -132,4 +151,26 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.getElementById('borrowed_at').addEventListener('input', function() {
+            const borrowedAt = new Date(this.value);
+            if (isNaN(borrowedAt)) return;
+
+            // Hitung 7 hari ke depan
+            const dueDate = new Date(borrowedAt);
+            dueDate.setDate(dueDate.getDate() + 7);
+            dueDate.setHours(23, 59, 59, 999); // Set waktu ke 23:59:59
+
+            // Format tanggal ke string sesuai kebutuhan
+            const formattedDueDate = dueDate.toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            }) + " 23:59";
+
+            // Tampilkan nilai due_date di input readonly
+            document.getElementById('due_date').value = formattedDueDate;
+        });
+    </script>
 @endsection

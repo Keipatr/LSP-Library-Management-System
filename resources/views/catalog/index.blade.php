@@ -85,6 +85,10 @@
                                     </span>
                                 </td>
                                 <td>
+                                    <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#borrowersModal{{ $book->book_id }}">
+                                        Lihat Peminjam
+                                    </button>
                                     <!-- Tombol Edit -->
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                         data-bs-target="#editBookModal" data-bs-book-id="{{ $book->book_id }}"
@@ -104,6 +108,38 @@
                                     </form>
                                 </td>
                             </tr>
+                            <!-- Modal -->
+                            <div class="modal fade" id="borrowersModal{{ $book->book_id }}" tabindex="-1"
+                                aria-labelledby="borrowersModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="borrowersModalLabel">Peminjam Buku:
+                                                {{ $book->title }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @if ($book->rentalDetails->isEmpty())
+                                                <p>Tidak ada peminjam saat ini.</p>
+                                            @else
+                                                <ul class="list-group">
+                                                    @foreach ($book->rentalDetails as $detail)
+                                                        @if ($detail->rental->rental_status == 0)
+                                                            <!-- Jika buku belum dikembalikan -->
+                                                            <li class="list-group-item">
+                                                                {{ $detail->rental->user->name }}
+                                                                (Peminjaman:
+                                                                {{ $detail->rental->borrowed_at?->format('d-m-Y') ?? 'Tanggal tidak tersedia' }})
+                                                            </li>
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @endforeach
                     </tbody>
                 </table>
@@ -228,9 +264,6 @@
                 editModal.querySelector('#edit_isbn').value = isbn
                 editModal.querySelector('#edit_publication_year').value = publicationYear
                 editModal.querySelector('#edit_stock').value = stock
-
-                console.log(isbn);
-                console.log(stock);
             })
         })
     </script>
