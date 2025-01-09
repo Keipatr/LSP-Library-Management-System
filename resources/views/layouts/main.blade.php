@@ -30,7 +30,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link {{ Request::is('/') ? 'active' : '' }}" href="{{ route('collections.index') }}">Koleksi Buku</a>
+                        <a class="nav-link {{ Request::is('/') ? 'active' : '' }}"
+                            href="{{ route('collections.index') }}">Koleksi Buku</a>
                     </li>
                     @if (Auth::check())
                         <li class="nav-item">
@@ -45,7 +46,8 @@
                         </li>
                     @else
                         <li class="nav-item">
-                            <a class="nav-link {{ Request::is('login') ? 'active' : '' }}" href="{{ route('login') }}">Login</a>
+                            <a class="nav-link {{ Request::is('login') ? 'active' : '' }}"
+                                href="{{ route('login') }}">Login</a>
                         </li>
                     @endif
                 </ul>
@@ -66,19 +68,21 @@
             if (borrowedBooksLink) {
                 borrowedBooksLink.addEventListener('click', function(event) {
                     event.preventDefault(); // Menghentikan default action link
+                    var count = 0;
                     fetch('{{ route('user.borrowed.books') }}')
                         .then(response => response.json())
                         .then(data => {
                             const tableBody = document.getElementById('borrowedBooksList');
                             tableBody.innerHTML = ''; // Kosongkan tabel sebelum menampilkan data
                             data.forEach((rental, index) => {
-                                rental.rental_details.forEach(detail => {
+                                rental.rental_details.forEach((detail, index) => {
+                                    count++;
                                     const row = `
                                 <tr>
-                                    <td>${index + 1}</td>
+                                    <td>${count}</td>
                                     <td>${detail.book.title}</td>
                                     <td>${detail.book.author}</td>
-                                    <td>${rental.due_date}</td>
+                                    <td>${formatDate(rental.due_date)}</td>
                                 </tr>
                             `;
                                     tableBody.insertAdjacentHTML('beforeend', row);
@@ -91,6 +95,18 @@
                 });
             }
         });
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            // Ambil bagian-bagian tanggal
+            const day = String(date.getDate()).padStart(2, '0'); // Tanggal (2 digit)
+            const month = date.toLocaleString('en-US', {
+                month: 'short'
+            }); // Bulan (Jan, Feb, dst.)
+            const year = date.getFullYear(); // Tahun (4 digit)
+            // Gabungkan menjadi format yang diinginkan
+            return `${day} ${month} ${year}, 23:59:59`;
+        }
     </script>
 </body>
 

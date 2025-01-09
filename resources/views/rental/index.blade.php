@@ -69,7 +69,7 @@
                                 </td>
 
                                 <td>{{ $rental->borrowed_at }}</td>
-                                <td>{{ $rental->due_date }}</td>
+                                <td>{{ $rental->due_date->toDateString() }}</td>
                                 <td>{{ $rental->returned_at }}</td>
                                 <td>
                                     <span
@@ -91,7 +91,10 @@
                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus peminjaman ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        @if ($rental->rental_status == '0')
+                                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        @endif
+
                                     </form>
                                 </td>
                             </tr>
@@ -133,7 +136,7 @@
                         <!-- Input Borrowed At -->
                         <div class="mb-3">
                             <label for="borrowed_at" class="form-label">Waktu Peminjaman</label>
-                            <input type="datetime-local" class="form-control" id="borrowed_at" name="borrowed_at" required>
+                            <input type="date" class="form-control" id="borrowed_at" name="borrowed_at" required>
                         </div>
 
                         <!-- Tampilkan Due Date -->
@@ -160,17 +163,17 @@
             // Hitung 7 hari ke depan
             const dueDate = new Date(borrowedAt);
             dueDate.setDate(dueDate.getDate() + 7);
-            dueDate.setHours(23, 59, 59, 999); // Set waktu ke 23:59:59
 
             // Format tanggal ke string sesuai kebutuhan
             const formattedDueDate = dueDate.toLocaleDateString('id-ID', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
-            }) + " 23:59";
+            });
 
             // Tampilkan nilai due_date di input readonly
             document.getElementById('due_date').value = formattedDueDate;
         });
+
     </script>
 @endsection

@@ -45,7 +45,7 @@ class CatalogController extends Controller
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'publisher' => 'required|string|max:255',
-            'publication_year' => 'required|digits:4|integer|min:1000|max:' . date('Y'),
+            'publication_year' => 'required|digits:4|integer|min:1901|max:' . date('Y'),
             'isbn' => 'required|string|max:20|unique:books,isbn',
             'stock' => 'required|integer|min:0',
         ]);
